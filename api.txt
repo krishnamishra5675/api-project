@@ -1,0 +1,186 @@
+INDEX.JS
+
+const express = require("express");
+
+//Database
+const database = require("./database");
+
+//Initialise express
+const booky = express();
+
+/*
+Route            /
+Description      Get all the books
+Access           PUBLIC
+Parameter        NONE
+Methods          GET
+*/
+booky.get("/",(req,res) => {
+  return res.json({books: database.books});
+});
+
+/*
+Route            /is
+Description      Get specific book on ISBN
+Access           PUBLIC
+Parameter        isbn
+Methods          GET
+*/
+booky.get("/is/:isbn",(req,res) => {
+  const getSpecificBook = database.books.filter(
+    (book) => book.ISBN ===  req.params.isbn
+  );
+
+  if(getSpecificBook.length === 0) {
+    return res.json({error: `No book found for the ISBN of ${req.params.isbn}`});
+  }
+
+  return res.json({book: getSpecificBook});
+});
+
+
+/*
+Route            /c
+Description      Get specific book on category
+Access           PUBLIC
+Parameter        category
+Methods          GET
+*/
+
+booky.get("/c/:category", (req,res) => {
+  const getSpecificBook = database.books.filter(
+    (book) => book.category.includes(req.params.category)
+  )
+
+  if(getSpecificBook.length === 0) {
+    return res.json({error: `No book found for the category of ${req.params.category}`})
+  }
+
+  return res.json({book: getSpecificBook});
+});
+
+
+/*
+Route            /author
+Description      Get all authors
+Access           PUBLIC
+Parameter        NONE
+Methods          GET
+*/
+
+booky.get("/author", (req,res) => {
+  return res.json({authors: database.author});
+});
+
+/*
+Route            /author/book
+Description      Get all authors based on books
+Access           PUBLIC
+Parameter        isbn
+Methods          GET
+*/
+
+booky.get("/author/book/:isbn", (req,res) => {
+  const getSpecificAuthor = database.author.filter(
+    (author) => author.books.includes(req.params.isbn)
+  );
+
+  if(getSpecificAuthor.length === 0){
+    return res.json({
+      error: `No author found for the book of ${req.params.isbn}`
+    });
+  }
+  return res.json({authors: getSpecificAuthor});
+});
+
+/*
+Route            /publications
+Description      Get all publications
+Access           PUBLIC
+Parameter        NONE
+Methods          GET
+*/
+
+booky.get("/publications",(req,res) => {
+  return res.json({publications: database.publication});
+})
+
+
+booky.listen(3000,() => {
+  console.log("Server is up and running");
+});
+
+
+REQUIREMENTS.JS
+
+//Requirement for our project
+
+//We are a book management company
+
+//BOOKS
+//ISBN, title, pub date, language, num page, author[], category[]
+
+//AUTHORS
+//id, name, books[]
+
+//PUBLICATIONS
+//id, name, books[]
+
+//We have to design and code an API over this .
+
+//1. BOOKS
+//We need an API :-
+//To get all the books - DONE
+//To get specific book - DONE
+//To get a list of books based on category - DONE
+//To get a list of books based on languages - YOUR TASK
+
+//2. AUTHORS
+//We need an API :-
+//To get all the authors - DONE
+//To get a specific author based on id- YOUR  TASK
+//To get a list of authors based on books - DONE
+
+//3. PUBLICATIONS
+//We need an API :-
+//To get all the publications
+//To get a specific publication - YOUR  TASK
+//To get a list of publications based on a book - YOUR TASK
+
+DATABASE.JS
+
+const books = [
+  {
+    ISBN: "12345Book",
+    title: "Tesla!!!",
+    pubDate: "2021-08-05",
+    language: "en",
+    numPage: 250,
+    author: [1,2],
+    publications: [1],
+    category: ["tech","space","education"]
+  }
+]
+
+const author = [
+  {
+    id: 1,
+    name: "Aradhana",
+    books: ["12345Book", "secretBook"]
+  },
+  {
+    id: 2,
+    name: "Elon Musk",
+    books: ["12345Book"]
+  }
+]
+
+const publication = [
+  {
+    id: 1,
+    name: "writex",
+    books: ["12345Book"]
+  }
+]
+
+module.exports = {books , author , publication};
